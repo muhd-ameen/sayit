@@ -4,7 +4,7 @@
 
 # SayIt
 
-A tiny macOS menu bar utility that refines messages before you send them — without switching to ChatGPT or disrupting your flow.
+A tiny macOS menu bar utility that refines messages before you send them, without switching to ChatGPT or disrupting your flow.
 
 Press **⌥ Space** anywhere. Type your draft. Get three polished variants instantly. Copy. Done.
 
@@ -12,14 +12,14 @@ Press **⌥ Space** anywhere. Type your draft. Get three polished variants insta
 
 ## Features
 
-- **Global hotkey** — ⌥ Space opens the panel from any app
-- **Three tone slots** — Default, Shorter, Professional (fully customizable)
-- **Nudge** — iterate on a result with a one-line instruction
-- **Context field** — paste a conversation thread so Claude can write the perfect reply
-- **Clipboard prefill** — opens with your clipboard text already loaded
-- **Streaming** — results appear card-by-card as Claude generates them
-- **API key in Keychain** — stored securely, never in plaintext
-- **No backend, no account** — direct Anthropic API call from your Mac
+- **Global hotkey.** ⌥ Space opens the panel from any app
+- **Three tone slots.** Default, Shorter, Professional (fully customizable)
+- **Nudge.** Iterate on a result with a one-line instruction
+- **Context field.** Paste a conversation thread so Claude can write the perfect reply
+- **Clipboard prefill.** Opens with your clipboard text already loaded
+- **Streaming.** Results appear card-by-card as Claude generates them
+- **API key in Keychain.** Stored securely, never in plaintext
+- **No backend, no account.** Direct Anthropic API call from your Mac
 
 ---
 
@@ -36,7 +36,7 @@ Press **⌥ Space** anywhere. Type your draft. Get three polished variants insta
 ### Build from source
 
 ```bash
-git clone https://github.com/your-username/sayit
+git clone https://github.com/muhd-ameen/sayit
 cd sayit
 swift build -c release
 ```
@@ -61,7 +61,7 @@ You can also set it via environment variable (useful for development):
 ANTHROPIC_API_KEY=sk-ant-... swift run
 ```
 
-To update the key later: menu bar icon → **Set API Key…**
+To update the key later: menu bar icon > **Set API Key…**
 
 ---
 
@@ -90,7 +90,7 @@ Defaults:
 | Shorter | same message, as few words as possible |
 | Professional | formal register, polished |
 
-Change them to anything — "Friendly", "Brutal honesty", "Gen Z", whatever fits your workflow.
+Change them to anything: "Friendly", "Brutal honesty", "Gen Z", whatever fits your workflow.
 
 ---
 
@@ -136,7 +136,7 @@ Sources/SayIt/
 
 ## Dependencies
 
-- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts) — global hotkey registration
+- [KeyboardShortcuts](https://github.com/sindresorhus/KeyboardShortcuts): global hotkey registration
 
 ---
 
@@ -148,4 +148,4 @@ Open `Sources/SayIt/Services/PromptBuilder.swift` and edit `systemPrompt` to mat
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
