@@ -4,6 +4,8 @@
 
 # SayIt
 
+**[sayit.avocadonation.xyz](https://sayit.avocadonation.xyz)**
+
 A tiny macOS menu bar utility that refines messages before you send them, without switching to ChatGPT or disrupting your flow.
 
 Press **⌥ Space** anywhere. Type your draft. Get three polished variants instantly. Copy. Done.
