@@ -3,8 +3,9 @@ BUILD    = .build/release
 APP_BUNDLE = $(APP).app
 CONTENTS = $(APP_BUNDLE)/Contents
 ICON_SRC = Sources/SayIt/Assets.xcassets/AppIcon.appiconset
+CERT     = Developer ID Application: APPETITE STUDIO LTD (PVB264U36R)
 
-.PHONY: build icon app install dmg release uninstall clean
+.PHONY: build icon app install dmg notarize release uninstall clean
 
 build:
 	swift build -c release
@@ -35,13 +36,15 @@ app: build icon
 	@if [ -d "$(BUILD)/$(APP)_$(APP).bundle" ]; then \
 		cp -r $(BUILD)/$(APP)_$(APP).bundle $(CONTENTS)/Resources/; \
 	fi
-	@codesign --force --sign - $(APP_BUNDLE)
-	@echo "Built $(APP_BUNDLE)"
+	@codesign --force --deep --sign "$(CERT)" \
+		--options runtime \
+		--entitlements entitlements.plist \
+		$(APP_BUNDLE)
+	@echo "Built and signed $(APP_BUNDLE)"
 
 install: app
 	@rm -rf /Applications/$(APP_BUNDLE)
 	@cp -r $(APP_BUNDLE) /Applications/
-	@xattr -cr /Applications/$(APP_BUNDLE)
 	@echo "Installed to /Applications/$(APP_BUNDLE)"
 	@open /Applications/$(APP_BUNDLE)
 
@@ -57,14 +60,22 @@ dmg: app
 		--no-internet-enable \
 		"$(APP).dmg" \
 		"$(APP_BUNDLE)"
-	@echo "Built $(APP).dmg — ready to upload to GitHub Releases"
+	@echo "Built $(APP).dmg"
 
-release: dmg
-	@echo "Release artifact: $(APP).dmg"
+notarize: dmg
+	@echo "Submitting to Apple for notarization..."
+	xcrun notarytool submit $(APP).dmg \
+		--keychain-profile "sayit-notarize" \
+		--wait
+	xcrun stapler staple $(APP).dmg
+	@echo "Notarized and stapled $(APP).dmg"
+
+release: notarize
+	@echo "Release artifact: $(APP).dmg — ready to upload"
 
 uninstall:
 	@rm -rf /Applications/$(APP_BUNDLE)
 	@echo "Removed /Applications/$(APP_BUNDLE)"
 
 clean:
-	@rm -rf .build $(APP_BUNDLE)
+	@rm -rf .build $(APP_BUNDLE) AppIcon.icns $(APP).dmg
