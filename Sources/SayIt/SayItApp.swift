@@ -5,7 +5,7 @@ struct SayItApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     var body: some Scene {
-        MenuBarExtra("SayIt", systemImage: "bubble.left.and.text.bubble.right") {
+        MenuBarExtra("SayIt", image: "MenuBarIcon") {
             Button("Open SayIt") {
                 WindowManager.shared.show()
             }

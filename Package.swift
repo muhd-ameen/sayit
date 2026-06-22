@@ -18,7 +18,10 @@ let package = Package(
             dependencies: [
                 .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts")
             ],
-            path: "Sources/SayIt"
+            path: "Sources/SayIt",
+            resources: [
+                .process("Assets.xcassets")
+            ]
         )
     ]
 )
