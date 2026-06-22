@@ -69,6 +69,13 @@
       display: flex;
       flex: 1;
       min-height: 0;
+      position: relative;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     /* LEFT */
@@ -271,10 +278,25 @@
       text-decoration: none;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15), 0 0 0 0.5px rgba(255, 255, 255, 0.6) inset;
       transition: background 0.15s, opacity 0.15s;
+      flex-shrink: 0;
     }
     .x-link:hover {
       background: rgba(255, 255, 255, 0.96);
       opacity: 0.85;
+    }
+
+    @media (max-width: 639px) {
+      .x-link {
+        position: static;
+        background: rgba(0, 0, 0, 0.06);
+        box-shadow: none;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+      .x-link:hover {
+        background: rgba(0, 0, 0, 0.1);
+        opacity: 1;
+      }
     }
 
     /* ── MOBILE ── */
@@ -315,7 +337,14 @@
 
       <!-- LEFT PANEL -->
       <div class="left">
-        <div class="brand">SayIt</div>
+        <div class="brand-row">
+          <div class="brand">SayIt</div>
+          <a class="x-link" href="https://x.com/emeenx" target="_blank" rel="noopener noreferrer" aria-label="Follow on X">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.26 5.632 5.905-5.632Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+        </div>
         <div class="hero">
           <h1>One shortcut and&nbsp;your message handles itself.</h1>
           <p>Press <strong>⌥ Space</strong> anywhere. Paste your draft. Get three polished variants in under a second.</p>
@@ -325,12 +354,6 @@
       <!-- RIGHT PANEL -->
       <div class="right">
         <div class="right-bg"></div>
-
-        <a class="x-link" href="https://x.com/emeenx" target="_blank" rel="noopener noreferrer" aria-label="Follow on X">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.26 5.632 5.905-5.632Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-        </a>
 
         <div class="app-window">
           <div class="window-bar">
