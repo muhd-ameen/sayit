@@ -4,6 +4,11 @@
 *.o
 *.d
 
+# Build artifacts
+*.app/
+*.dmg
+*.icns
+
 # Xcode
 xcuserdata/
 *.xcworkspace/xcuserdata/

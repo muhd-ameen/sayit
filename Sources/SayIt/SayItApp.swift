@@ -5,7 +5,7 @@ struct SayItApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     var body: some Scene {
-        MenuBarExtra("SayIt", image: "MenuBarIcon") {
+        MenuBarExtra {
             Button("Open SayIt") {
                 WindowManager.shared.show()
             }
@@ -23,6 +23,9 @@ struct SayItApp: App {
                 NSApplication.shared.terminate(nil)
             }
             .keyboardShortcut("q", modifiers: .command)
+        } label: {
+            Image("MenuBarIcon", bundle: .module)
+                .renderingMode(.template)
         }
     }
 }
@@ -51,32 +54,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - First launch setup
 
     private func runFirstLaunchSetup() {
-        AppDelegate.promptForAPIKey()
-        promptForLoginItem()
         UserDefaults.standard.set(true, forKey: hasCompletedSetupKey)
+        showOnboarding()
     }
 
-    private func promptForLoginItem() {
-        guard SMAppService.mainApp.status != .enabled else { return }
-
-        let alert = NSAlert()
-        alert.messageText = "Launch SayIt at Login?"
-        alert.informativeText = "SayIt will start automatically when you log in, so ⌥ Space is always ready."
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: "Yes, Launch at Login")
-        alert.addButton(withTitle: "Not Now")
-
-        NSApp.activate(ignoringOtherApps: true)
-        let response = alert.runModal()
-
-        if response == .alertFirstButtonReturn {
-            do {
-                try SMAppService.mainApp.register()
-            } catch {
-                // If registration fails (e.g. app not in /Applications yet), silently skip.
-                // User can enable it later via menu bar → Set API Key flow or System Settings.
-            }
-        }
+    private func showOnboarding() {
+        let view = OnboardingView(onDone: {
+            OnboardingWindowController.close()
+        })
+        OnboardingWindowController.show(view: view)
     }
 
     // MARK: - API Key prompt
