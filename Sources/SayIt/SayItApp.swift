@@ -17,6 +17,10 @@ struct SayItApp: App {
                 AppDelegate.promptForAPIKey()
             }
 
+            Button("Contact Support…") {
+                AppDelegate.openSupportMail()
+            }
+
             Divider()
 
             Button("Quit SayIt") {
@@ -63,6 +67,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             OnboardingWindowController.close()
         })
         OnboardingWindowController.show(view: view)
+    }
+
+    // MARK: - Support
+
+    static func openSupportMail() {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "1.0.1"
+        let subject = "SayIt support (v\(version))"
+        let encoded = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? subject
+        if let url = URL(string: "mailto:\(SettingsView.supportEmail)?subject=\(encoded)") {
+            NSWorkspace.shared.open(url)
+        }
     }
 
     // MARK: - API Key prompt

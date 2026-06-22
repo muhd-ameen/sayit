@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <!-- Source artwork for the menu bar icon (template glyph).
+       Solid black on transparent so macOS tints it for light/dark menu bars.
+       Rendered to MenuBarIcon.png (1x), @2x and @3x via rsvg-convert. -->
+  <path fill="#000000" fill-rule="evenodd" d="
+    M4.2 1.5
+    h9.6
+    a2.7 2.7 0 0 1 2.7 2.7
+    v6.0
+    a2.7 2.7 0 0 1 -2.7 2.7
+    h-5.1
+    l-3.4 3.1
+    a0.6 0.6 0 0 1 -1.0 -0.45
+    v-2.65
+    h-0.1
+    a2.7 2.7 0 0 1 -2.7 -2.7
+    v-6.0
+    a2.7 2.7 0 0 1 2.7 -2.7
+    z
+    M5.4 6.1 a1.0 1.0 0 1 0 0.01 0 z
+    M9.0 6.1 a1.0 1.0 0 1 0 0.01 0 z
+    M12.6 6.1 a1.0 1.0 0 1 0 0.01 0 z
+  "/>
+</svg>

@@ -2,7 +2,7 @@ import Security
 import Foundation
 
 enum KeychainService {
-    private static let service = "xyz.ameeen.sayit"
+    private static let service = "xyz.avocadonation.sayit"
     private static let account = "anthropic-api-key"
 
     static func saveAPIKey(_ key: String) {
