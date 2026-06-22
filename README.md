@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" width="120" alt="SayIt" />
+</p>
+
 # SayIt
 
 A tiny macOS menu bar utility that refines messages before you send them — without switching to ChatGPT or disrupting your flow.
