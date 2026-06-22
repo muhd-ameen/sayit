@@ -47,7 +47,16 @@ install: app
 
 dmg: app
 	@rm -f $(APP).dmg
-	python3 -m dmgbuild -s scripts/dmg-settings.py -D app=$(APP_BUNDLE) "$(APP)" $(APP).dmg
+	create-dmg \
+		--volname "$(APP)" \
+		--background "assets/dmg-background.png" \
+		--window-size 660 420 \
+		--icon-size 120 \
+		--icon "$(APP_BUNDLE)" 175 240 \
+		--app-drop-link 485 240 \
+		--no-internet-enable \
+		"$(APP).dmg" \
+		"$(APP_BUNDLE)"
 	@echo "Built $(APP).dmg — ready to upload to GitHub Releases"
 
 release: dmg

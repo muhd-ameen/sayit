@@ -1,10 +1,10 @@
 import os
 
 application = defines.get('app', 'SayIt.app')
+bg          = defines.get('background', '')
 
 appname = os.path.basename(application)
 
-# Volume
 size = None
 files = [application]
 symlinks = {'Applications': '/Applications'}
@@ -14,7 +14,7 @@ icon_locations = {
     'Applications': (485, 240),
 }
 
-background = 'assets/dmg-background.png'
+background = bg
 
 show_status_bar = False
 show_tab_view = False
