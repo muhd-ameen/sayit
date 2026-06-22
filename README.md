@@ -151,3 +151,19 @@ Open `Sources/SayIt/Services/PromptBuilder.swift` and edit `systemPrompt` to mat
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+---
+
+## Known issues
+
+- **Login item on unsigned builds** — "Launch at login" may silently fail if the app isn't in `/Applications` or was installed without `make install`. Workaround: add manually via System Settings → General → Login Items.
+- **Gatekeeper block on first launch** — Downloaded DMG builds are unsigned. Right-click → Open on the first launch to bypass the macOS security prompt.
+- **Menu bar icon missing after manual copy** — If you copy `SayIt.app` manually instead of using `make install`, the icon may not appear until you run `xattr -cr /Applications/SayIt.app` and relaunch.
+
+See [open issues](https://github.com/muhd-ameen/sayit/issues) or [open a new one](https://github.com/muhd-ameen/sayit/issues/new) if you hit something not listed here.
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
