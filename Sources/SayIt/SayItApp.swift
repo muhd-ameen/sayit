@@ -13,10 +13,6 @@ struct SayItApp: App {
 
             Divider()
 
-            Button("Set API Key…") {
-                AppDelegate.promptForAPIKey()
-            }
-
             Button("Contact Support…") {
                 AppDelegate.openSupportMail()
             }
@@ -41,13 +37,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         HotkeyService.shared.setup()
 
+        // One-time cleanup: purge any personal Anthropic key stored by an
+        // older version that asked users to bring their own. The app now uses
+        // a server-side proxy and never needs a key on-device.
+        KeychainService.deleteAPIKey()
+
         let isFirstLaunch = !UserDefaults.standard.bool(forKey: hasCompletedSetupKey)
 
         if isFirstLaunch {
             runFirstLaunchSetup()
-        } else if KeychainService.loadAPIKey() == nil &&
-                  (ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? "").isEmpty {
-            AppDelegate.promptForAPIKey()
         }
     }
 
@@ -78,34 +76,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let encoded = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? subject
         if let url = URL(string: "mailto:\(SettingsView.supportEmail)?subject=\(encoded)") {
             NSWorkspace.shared.open(url)
-        }
-    }
-
-    // MARK: - API Key prompt
-
-    static func promptForAPIKey() {
-        let alert = NSAlert()
-        alert.messageText = "Anthropic API Key"
-        alert.informativeText = "Enter your API key from console.anthropic.com. Stored securely in your Keychain."
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: "Save")
-        alert.addButton(withTitle: "Cancel")
-
-        let field = NSSecureTextField(frame: NSRect(x: 0, y: 0, width: 380, height: 24))
-        field.placeholderString = "sk-ant-..."
-        if let existing = KeychainService.loadAPIKey() {
-            field.stringValue = existing
-        }
-        alert.accessoryView = field
-
-        NSApp.activate(ignoringOtherApps: true)
-        let response = alert.runModal()
-
-        if response == .alertFirstButtonReturn {
-            let key = field.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
-            if !key.isEmpty {
-                KeychainService.saveAPIKey(key)
-            }
         }
     }
 }

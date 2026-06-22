@@ -1,19 +1,18 @@
 import Foundation
 
 enum ClaudeError: LocalizedError, Sendable {
-    case missingAPIKey
     case networkError(Error)
     case invalidResponse
     case apiError(Int, String)
 
     var errorDescription: String? {
         switch self {
-        case .missingAPIKey:
-            return "API key not found. Set ANTHROPIC_API_KEY or use the menu bar to add one."
         case .networkError(let e):
             return "Network error: \(e.localizedDescription)"
         case .invalidResponse:
             return "Unexpected response from Claude. Try again."
+        case .apiError(let status, _) where status == 429:
+            return "You're going a bit fast — wait a moment and try again."
         case .apiError(let status, let msg):
             return "Claude API error \(status): \(msg)"
         }
@@ -33,15 +32,6 @@ private struct SSEEvent: Decodable {
 actor ClaudeService {
     static let shared = ClaudeService()
 
-    private let apiURL = URL(string: "https://api.anthropic.com/v1/messages")!
-    private let model = "claude-haiku-4-5"
-
-    private var apiKey: String? {
-        if let key = KeychainService.loadAPIKey() { return key }
-        let env = ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? ""
-        return env.isEmpty ? nil : env
-    }
-
     func refineStream(
         context: String,
         draft: String,
@@ -50,9 +40,6 @@ actor ClaudeService {
         previousDefault: String?
     ) -> AsyncThrowingStream<[RefinedReply], Error> {
         // Capture everything needed before leaving actor isolation
-        let capturedKey = apiKey
-        let capturedURL = apiURL
-        let capturedModel = model
         let prompt = PromptBuilder.build(
             context: context, draft: draft, tones: tones,
             nudge: nudge, previousDefault: previousDefault
@@ -61,23 +48,15 @@ actor ClaudeService {
 
         return AsyncThrowingStream { continuation in
             Task { [self] in
-                guard let key = capturedKey else {
-                    continuation.finish(throwing: ClaudeError.missingAPIKey)
-                    return
-                }
-
-                var request = URLRequest(url: capturedURL)
+                var request = URLRequest(url: AppConfig.refineURL)
                 request.httpMethod = "POST"
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.setValue(key, forHTTPHeaderField: "x-api-key")
-                request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+                request.setValue(AppConfig.appToken, forHTTPHeaderField: "x-sayit-app")
 
+                // The proxy pins model/max_tokens/stream and adds the Anthropic key.
                 let body: [String: Any] = [
-                    "model": capturedModel,
-                    "max_tokens": 512,
-                    "stream": true,
                     "system": system,
-                    "messages": [["role": "user", "content": prompt]]
+                    "prompt": prompt
                 ]
 
                 do {

@@ -28,5 +28,8 @@
     <string>14.0</string>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2025 Muhammed Ameen. All rights reserved.</string>
+    <!-- Injected at build time from $SAYIT_APP_TOKEN (see Makefile). Placeholder only. -->
+    <key>SayItAppToken</key>
+    <string></string>
 </dict>
 </plist>

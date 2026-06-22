@@ -32,6 +32,11 @@ app: build icon
 	@cp $(BUILD)/$(APP) $(CONTENTS)/MacOS/
 	@strip $(CONTENTS)/MacOS/$(APP)
 	@cp Info.plist $(CONTENTS)/
+	@if [ -z "$(SAYIT_APP_TOKEN)" ]; then \
+		echo "ERROR: SAYIT_APP_TOKEN is not set — the build would ship without a proxy token."; \
+		exit 1; \
+	fi
+	@/usr/libexec/PlistBuddy -c "Set :SayItAppToken $(SAYIT_APP_TOKEN)" $(CONTENTS)/Info.plist
 	@cp AppIcon.icns $(CONTENTS)/Resources/
 	@if [ -d "$(BUILD)/$(APP)_$(APP).bundle" ]; then \
 		cp -r $(BUILD)/$(APP)_$(APP).bundle $(CONTENTS)/Resources/; \
