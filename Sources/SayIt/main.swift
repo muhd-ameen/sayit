@@ -1,0 +1,3 @@
+import SwiftUI
+
+SayItApp.main()

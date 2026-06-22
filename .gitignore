@@ -1,0 +1,34 @@
+# Swift / SPM
+.build/
+.swiftpm/
+*.o
+*.d
+
+# Xcode
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.xccheckout
+*.moved-to-trash
+*.xcuserstate
+*.xcscmblueprint
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# Environment
+.env
+.env.local
+*.env
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
