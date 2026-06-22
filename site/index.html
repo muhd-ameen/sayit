@@ -339,6 +339,135 @@
         padding: 0 28px;
       }
     }
+
+    /* ── DOWNLOAD MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(10, 10, 10, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal {
+      width: min(400px, 100%);
+      background: #f6f6f4;
+      border-radius: 16px;
+      box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(0, 0, 0, 0.06);
+      padding: 32px 30px 28px;
+      position: relative;
+      transform: translateY(12px) scale(0.98);
+      transition: transform 0.2s ease;
+    }
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 10px;
+    }
+    .modal h2 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #0a0a0a;
+      margin-bottom: 8px;
+    }
+    .modal p {
+      font-size: 13.5px;
+      color: #777;
+      line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .modal-field {
+      width: 100%;
+      background: #fff;
+      border: 1px solid #dcdcda;
+      border-radius: 10px;
+      padding: 13px 14px;
+      font-size: 14px;
+      font-family: 'Inter', -apple-system, sans-serif;
+      color: #0a0a0a;
+      margin-bottom: 12px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .modal-field::placeholder { color: #aaa; }
+    .modal-field:focus {
+      outline: none;
+      border-color: #0a0a0a;
+      box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.08);
+    }
+
+    .modal-submit {
+      width: 100%;
+      background: #0a0a0a;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .modal-submit:hover { opacity: 0.85; }
+    .modal-submit:disabled { opacity: 0.5; cursor: default; }
+
+    .modal-error {
+      font-size: 12.5px;
+      color: #c0392b;
+      margin-top: 10px;
+      min-height: 16px;
+    }
+
+    .modal-fineprint {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 8px;
+      font-size: 16px;
+      color: #555;
+      cursor: pointer;
+      line-height: 1;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: rgba(0, 0, 0, 0.1); }
+
+    /* visually-hidden honeypot wrapper */
+    .hp-field { position: absolute; left: -9999px; }
   </style>
 </head>
 <body>
@@ -401,12 +530,127 @@
         </a>
       </div>
       <div class="bottom-right">
-        <a class="btn btn-download" href="https://github.com/muhd-ameen/sayit/releases/download/v1.0.0/SayIt.dmg" target="_blank" rel="noopener noreferrer">
+        <button type="button" class="btn btn-download" id="downloadBtn" style="background:none;border:none;cursor:pointer;font-family:inherit;">
           Download for Mac&nbsp;↓
-        </a>
+        </button>
       </div>
     </div>
 
   </div>
+
+  <!-- DOWNLOAD / EMAIL CAPTURE MODAL -->
+  <div class="modal-overlay" id="downloadModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <div class="modal">
+      <button type="button" class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+      <div class="modal-eyebrow">SayIt for Mac</div>
+      <h2 id="modalTitle">Almost there.</h2>
+      <p>Drop your email and your download starts instantly. We'll only ping you about big updates.</p>
+
+      <form name="download-signups" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="downloadForm">
+        <input type="hidden" name="form-name" value="download-signups">
+        <p class="hp-field">
+          <label>Don't fill this out: <input name="bot-field"></label>
+        </p>
+        <input
+          class="modal-field"
+          type="email"
+          name="email"
+          id="emailInput"
+          placeholder="you@example.com"
+          required
+          autocomplete="email"
+        >
+        <button type="submit" class="modal-submit" id="modalSubmit">Download SayIt&nbsp;↓</button>
+        <div class="modal-error" id="modalError" role="alert"></div>
+        <p class="modal-fineprint">macOS 13+ · Free · No account needed.</p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var DMG_URL = 'https://github.com/muhd-ameen/sayit/releases/download/v1.0.0/SayIt.dmg';
+
+      var overlay = document.getElementById('downloadModal');
+      var openBtn = document.getElementById('downloadBtn');
+      var closeBtn = document.getElementById('modalClose');
+      var form = document.getElementById('downloadForm');
+      var emailInput = document.getElementById('emailInput');
+      var submitBtn = document.getElementById('modalSubmit');
+      var errorEl = document.getElementById('modalError');
+
+      function openModal() {
+        overlay.hidden = false;
+        // allow the browser to paint before transitioning in
+        requestAnimationFrame(function () { overlay.classList.add('open'); });
+        setTimeout(function () { emailInput.focus(); }, 120);
+      }
+
+      function closeModal() {
+        overlay.classList.remove('open');
+        setTimeout(function () { overlay.hidden = true; }, 200);
+      }
+
+      function startDownload() {
+        var a = document.createElement('a');
+        a.href = DMG_URL;
+        a.setAttribute('download', '');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      function encode(data) {
+        return Object.keys(data)
+          .map(function (k) {
+            return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]);
+          })
+          .join('&');
+      }
+
+      openBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) closeModal();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+      });
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errorEl.textContent = '';
+
+        var email = emailInput.value.trim();
+        if (!email) { return; }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Starting download…';
+
+        if (typeof gtag === 'function') {
+          gtag('event', 'download', { method: 'mac_dmg' });
+        }
+
+        fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: encode({ 'form-name': 'download-signups', email: email, 'bot-field': '' })
+        })
+          .then(function () {
+            startDownload();
+            closeModal();
+          })
+          .catch(function () {
+            // Don't block the user from getting the app if the form POST fails.
+            startDownload();
+            closeModal();
+          })
+          .finally(function () {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Download SayIt&nbsp;↓';
+          });
+      });
+    })();
+  </script>
 </body>
 </html>
