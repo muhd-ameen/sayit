@@ -71,7 +71,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     static func openSupportMail() {
         let info = Bundle.main.infoDictionary
-        let version = info?["CFBundleShortVersionString"] as? String ?? "1.0.1"
+        let version = info?["CFBundleShortVersionString"] as? String ?? "1.1.0"
         let subject = "SayIt support (v\(version))"
         let encoded = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? subject
         if let url = URL(string: "mailto:\(SettingsView.supportEmail)?subject=\(encoded)") {
