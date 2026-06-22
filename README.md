@@ -20,16 +20,16 @@ Press **⌥ Space** anywhere. Type your draft. Get three polished variants insta
 - **Context field.** Paste a conversation thread so Claude can write the perfect reply
 - **Clipboard prefill.** Opens with your clipboard text already loaded
 - **Streaming.** Results appear card-by-card as Claude generates them
-- **API key in Keychain.** Stored securely, never in plaintext
-- **No backend, no account.** Direct Anthropic API call from your Mac
+- **Zero setup.** No Anthropic API key, no account — download and start refining
+- **Private.** Your draft is sent over HTTPS to SayIt's proxy and straight to Claude; messages aren't stored
 
 ---
 
 ## Requirements
 
-- macOS 14 (Sonnet) or later
-- [Anthropic API key](https://console.anthropic.com)
-- Xcode 15+ or Swift 5.9+ CLI tools
+**To use it:** macOS 14 (Sonoma) or later. That's it — no API key, no account.
+
+**To build from source:** Xcode 15+ or Swift 5.9+ CLI tools, plus a `SAYIT_APP_TOKEN` — the shared token the app sends to the refine proxy. Without it, the build runs but refining returns 401.
 
 ---
 
@@ -55,15 +55,14 @@ swift run
 
 ## Setup
 
-On first launch SayIt will ask for your Anthropic API key. It's stored in your macOS Keychain under `SayIt`.
+None. SayIt works the moment you open it — refining runs through SayIt's hosted proxy, so there's no API key to enter and no account to create.
 
-You can also set it via environment variable (useful for development):
+Building from source? Pass the proxy token at build/run time:
 
 ```bash
-ANTHROPIC_API_KEY=sk-ant-... swift run
+SAYIT_APP_TOKEN=... swift run     # development
+SAYIT_APP_TOKEN=... make app      # signed .app bundle
 ```
-
-To update the key later: menu bar icon > **Set API Key…**
 
 ---
 
@@ -102,12 +101,13 @@ Change them to anything: "Friendly", "Brutal honesty", "Gen Z", whatever fits yo
 ⌥ Space
   └─ WindowManager shows floating NSPanel
        └─ PopupView reads context + draft
-            └─ ClaudeService streams claude-haiku-4-5
-                 └─ JSON response: { "default": "…", "shorter": "…", "professional": "…" }
-                      └─ Result cards appear as each field completes
+            └─ ClaudeService → POST { system, prompt } to the SayIt proxy
+                 └─ Proxy adds the Anthropic key, streams claude-haiku-4-5
+                      └─ JSON response: { "default": "…", "shorter": "…", "professional": "…" }
+                           └─ Result cards appear as each field completes
 ```
 
-No server. No telemetry. One API call per refine.
+The proxy is a small [Netlify function](site/netlify/functions/refine.mts) that holds the Anthropic key server-side, so it never ships in the app. It pins the model and token limits, rate-limits per IP, and streams Claude's response straight back. No telemetry; messages aren't stored.
 
 ---
 
@@ -121,10 +121,11 @@ Sources/SayIt/
 │   ├── RefinedReply.swift  # Result value type
 │   └── ToneSlot.swift      # Tone config + UserDefaults persistence
 ├── Services/
-│   ├── ClaudeService.swift # Streaming Anthropic API actor
+│   ├── AppConfig.swift     # Proxy URL + app token (token injected at build time)
+│   ├── ClaudeService.swift # Streams refinements through the proxy
 │   ├── ClipboardService.swift
 │   ├── HotkeyService.swift # ⌥ Space via KeyboardShortcuts
-│   ├── KeychainService.swift
+│   ├── KeychainService.swift # Clears any legacy on-device API key
 │   └── PromptBuilder.swift # System prompt + user prompt construction
 ├── Utilities/
 │   └── WindowManager.swift # NSPanel lifecycle
@@ -156,8 +157,7 @@ MIT. See [LICENSE](LICENSE).
 
 ## Known issues
 
-- **Login item on unsigned builds** — "Launch at login" may silently fail if the app isn't in `/Applications` or was installed without `make install`. Workaround: add manually via System Settings → General → Login Items.
-- **Gatekeeper block on first launch** — Downloaded DMG builds are unsigned. Right-click → Open on the first launch to bypass the macOS security prompt.
+- **Login item may fail outside `/Applications`** — "Launch at login" can silently fail if the app isn't in `/Applications` or was installed without `make install`. Workaround: add manually via System Settings → General → Login Items.
 - **Menu bar icon missing after manual copy** — If you copy `SayIt.app` manually instead of using `make install`, the icon may not appear until you run `xattr -cr /Applications/SayIt.app` and relaunch.
 
 See [open issues](https://github.com/muhd-ameen/sayit/issues) or [open a new one](https://github.com/muhd-ameen/sayit/issues/new) if you hit something not listed here.
