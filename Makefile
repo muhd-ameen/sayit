@@ -46,12 +46,8 @@ install: app
 	@open /Applications/$(APP_BUNDLE)
 
 dmg: app
-	@rm -rf /tmp/$(APP)-dmg $(APP).dmg
-	@mkdir /tmp/$(APP)-dmg
-	@cp -r $(APP_BUNDLE) /tmp/$(APP)-dmg/
-	@ln -s /Applications /tmp/$(APP)-dmg/Applications
-	@hdiutil create -volname "$(APP)" -srcfolder /tmp/$(APP)-dmg -ov -format UDZO $(APP).dmg
-	@rm -rf /tmp/$(APP)-dmg
+	@rm -f $(APP).dmg
+	python3 -m dmgbuild -s scripts/dmg-settings.py -D app=$(APP_BUNDLE) "$(APP)" $(APP).dmg
 	@echo "Built $(APP).dmg — ready to upload to GitHub Releases"
 
 release: dmg
