@@ -8,6 +8,7 @@
 *.app/
 *.dmg
 *.icns
+dist-intel/
 
 # Xcode
 xcuserdata/

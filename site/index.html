@@ -457,6 +457,60 @@
       line-height: 1.5;
     }
 
+    /* ── CHIP SELECTOR ── */
+    .chip-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+    .chip-select {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .chip-option {
+      display: block;
+      cursor: pointer;
+      border: 1px solid #dcdcda;
+      border-radius: 10px;
+      padding: 11px 12px;
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .chip-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .chip-option .chip-title {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0a0a0a;
+    }
+    .chip-option .chip-sub {
+      display: block;
+      font-size: 11px;
+      color: #999;
+      margin-top: 2px;
+    }
+    .chip-option.selected {
+      border-color: #0a0a0a;
+      box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.08);
+    }
+    .chip-help {
+      font-size: 11px;
+      color: #aaa;
+      margin: 0 0 16px;
+      line-height: 1.5;
+    }
+    .chip-help a { color: #777; text-decoration: underline; }
+
     .modal-close {
       position: absolute;
       top: 20px;
@@ -603,6 +657,22 @@
         <p class="hp-field">
           <label>Don't fill this out: <input name="bot-field"></label>
         </p>
+
+        <div class="chip-label">Which Mac?</div>
+        <div class="chip-select" id="chipSelect">
+          <label class="chip-option selected" data-arch="arm">
+            <input type="radio" name="arch" value="arm" checked>
+            <span class="chip-title">Apple Silicon</span>
+            <span class="chip-sub">M1 · M2 · M3 · M4</span>
+          </label>
+          <label class="chip-option" data-arch="intel">
+            <input type="radio" name="arch" value="intel">
+            <span class="chip-title">Intel</span>
+            <span class="chip-sub">2020 &amp; earlier</span>
+          </label>
+        </div>
+        <p class="chip-help">Not sure? Apple menu → <strong>About This Mac</strong> shows your chip. When in doubt, most recent Macs are Apple Silicon.</p>
+
         <input
           class="modal-field"
           type="email"
@@ -652,7 +722,22 @@
 
   <script>
     (function () {
-      var DMG_URL = 'https://github.com/muhd-ameen/sayit/releases/download/v1.2.0/SayIt.dmg';
+      var DMG_URLS = {
+        arm:   'https://github.com/muhd-ameen/sayit/releases/download/v1.2.0/SayIt.dmg',
+        intel: 'https://github.com/muhd-ameen/sayit/releases/download/v1.2.0/SayIt-intel.dmg'
+      };
+      var selectedArch = 'arm';
+
+      var chipSelect = document.getElementById('chipSelect');
+      chipSelect.addEventListener('click', function (e) {
+        var opt = e.target.closest('.chip-option');
+        if (!opt) return;
+        selectedArch = opt.getAttribute('data-arch');
+        Array.prototype.forEach.call(
+          chipSelect.querySelectorAll('.chip-option'),
+          function (el) { el.classList.toggle('selected', el === opt); }
+        );
+      });
 
       var overlay = document.getElementById('downloadModal');
       var openBtn = document.getElementById('downloadBtn');
@@ -676,7 +761,7 @@
 
       function startDownload() {
         var a = document.createElement('a');
-        a.href = DMG_URL;
+        a.href = DMG_URLS[selectedArch] || DMG_URLS.arm;
         a.setAttribute('download', '');
         document.body.appendChild(a);
         a.click();
@@ -734,7 +819,7 @@
         submitBtn.textContent = 'Starting download…';
 
         if (typeof gtag === 'function') {
-          gtag('event', 'download', { method: 'mac_dmg' });
+          gtag('event', 'download', { method: 'mac_dmg', arch: selectedArch });
         }
 
         fetch('/', {

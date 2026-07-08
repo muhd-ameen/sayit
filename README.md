@@ -27,7 +27,7 @@ Press **⌥ Space** anywhere. Type your draft. Get three polished variants insta
 
 ## Requirements
 
-**To use it:** macOS 14 (Sonoma) or later. That's it — no API key, no account.
+**To use it:** macOS 14 (Sonoma) or later, on Apple Silicon or Intel. That's it — no API key, no account.
 
 **To build from source:** Xcode 15+ or Swift 5.9+ CLI tools, plus a `SAYIT_APP_TOKEN` — the shared token the app sends to the refine proxy. Without it, the build runs but refining returns 401.
 
