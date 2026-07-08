@@ -37,3 +37,6 @@ Icon
 .idea/
 *.swp
 *.swo
+
+# Local Netlify folder
+.netlify
