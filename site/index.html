@@ -238,6 +238,7 @@
       width: 50%;
       display: flex;
       align-items: center;
+      gap: 22px;
       padding: 0 44px;
       background: #f2f2f0;
       border-right: 1px solid #dcdcda;
@@ -268,6 +269,13 @@
 
     .btn-github { color: #4f46e5; }
     .btn-download { color: #0a0a0a; }
+    .btn-help {
+      color: #777;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
 
 
     /* ── X LINK ── */
@@ -466,6 +474,46 @@
     }
     .modal-close:hover { background: rgba(0, 0, 0, 0.1); }
 
+    /* ── HELP MODAL EXTRAS ── */
+    .kbd {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85em;
+      font-weight: 700;
+      background: #fff;
+      border: 1px solid #dcdcda;
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      padding: 1px 7px;
+      color: #0a0a0a;
+      vertical-align: middle;
+    }
+    .help-list {
+      margin: 0 0 4px;
+      padding-left: 20px;
+      list-style: decimal;
+    }
+    .help-list li {
+      font-size: 13.5px;
+      color: #777;
+      line-height: 1.55;
+      margin-bottom: 14px;
+      padding-left: 4px;
+    }
+    .help-list li strong {
+      display: block;
+      color: #0a0a0a;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .help-list li em {
+      font-style: normal;
+      color: #0a0a0a;
+      font-weight: 600;
+    }
+    .modal-fineprint a { color: #4f46e5; text-decoration: none; }
+    .modal-fineprint a:hover { text-decoration: underline; }
+
     /* visually-hidden honeypot wrapper */
     .hp-field { position: absolute; left: -9999px; }
   </style>
@@ -528,6 +576,9 @@
         <a class="btn btn-github" href="https://github.com/muhd-ameen/sayit" target="_blank" rel="noopener noreferrer">
           GitHub&nbsp;↗
         </a>
+        <button type="button" class="btn btn-help" id="helpBtn" aria-haspopup="dialog">
+          Help&nbsp;?
+        </button>
       </div>
       <div class="bottom-right">
         <button type="button" class="btn btn-download" id="downloadBtn" style="background:none;border:none;cursor:pointer;font-family:inherit;">
@@ -564,6 +615,37 @@
         <div class="modal-error" id="modalError" role="alert"></div>
         <p class="modal-fineprint">macOS 13+ · Free · No account needed.</p>
       </form>
+    </div>
+  </div>
+
+  <!-- HELP MODAL -->
+  <div class="modal-overlay" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+    <div class="modal">
+      <button type="button" class="modal-close" id="helpClose" aria-label="Close">&times;</button>
+      <div class="modal-eyebrow">Troubleshooting</div>
+      <h2 id="helpTitle">Nothing happens on <span class="kbd">⌥</span> + <span class="kbd">Space</span>?</h2>
+      <p>SayIt lives in the menu bar and opens on the <strong>Option + Space</strong> shortcut. If the window doesn't appear, run through these:</p>
+
+      <ol class="help-list">
+        <li>
+          <strong>Is SayIt running?</strong>
+          Look for the SayIt icon in the menu bar (top-right). If it's not there, open SayIt from Applications or Spotlight first.
+        </li>
+        <li>
+          <strong>Grant Accessibility access.</strong>
+          Open <em>System Settings → Privacy &amp; Security → Accessibility</em> and turn SayIt <strong>on</strong>. The global shortcut can't fire without it. Quit and reopen SayIt after enabling.
+        </li>
+        <li>
+          <strong>Check for a shortcut clash.</strong>
+          Another app (or Spotlight/Input Sources) may have grabbed Option + Space. Disable the other binding, or set a new shortcut in SayIt's settings.
+        </li>
+        <li>
+          <strong>Restart SayIt.</strong>
+          Click the menu bar icon → Quit, then launch it again. A fresh start re-registers the hotkey.
+        </li>
+      </ol>
+
+      <p class="modal-fineprint">Still stuck? <a href="https://github.com/muhd-ameen/sayit/issues" target="_blank" rel="noopener noreferrer">Open an issue on GitHub</a> and we'll help you out.</p>
     </div>
   </div>
 
@@ -613,8 +695,31 @@
       overlay.addEventListener('click', function (e) {
         if (e.target === overlay) closeModal();
       });
+
+      // Help modal
+      var helpOverlay = document.getElementById('helpModal');
+      var helpBtn = document.getElementById('helpBtn');
+      var helpClose = document.getElementById('helpClose');
+
+      function openHelp() {
+        helpOverlay.hidden = false;
+        requestAnimationFrame(function () { helpOverlay.classList.add('open'); });
+      }
+      function closeHelp() {
+        helpOverlay.classList.remove('open');
+        setTimeout(function () { helpOverlay.hidden = true; }, 200);
+      }
+
+      helpBtn.addEventListener('click', openHelp);
+      helpClose.addEventListener('click', closeHelp);
+      helpOverlay.addEventListener('click', function (e) {
+        if (e.target === helpOverlay) closeHelp();
+      });
+
       document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+        if (e.key !== 'Escape') return;
+        if (overlay.classList.contains('open')) closeModal();
+        if (helpOverlay.classList.contains('open')) closeHelp();
       });
 
       form.addEventListener('submit', function (e) {
