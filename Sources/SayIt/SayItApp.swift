@@ -24,10 +24,29 @@ struct SayItApp: App {
             }
             .keyboardShortcut("q", modifiers: .command)
         } label: {
-            Image("MenuBarIcon", bundle: .module)
-                .renderingMode(.template)
+            Image(nsImage: Self.menuBarIcon)
         }
     }
+
+    /// SwiftPM ships `Assets.xcassets` uncompiled (no `Assets.car`), so
+    /// `Image("MenuBarIcon", bundle: .module)` resolves to nothing and the
+    /// status item renders invisibly. Load the PNG straight from the resource
+    /// bundle instead, with an SF Symbol fallback so the item is never blank.
+    private static let menuBarIcon: NSImage = {
+        let imageset = "Assets.xcassets/MenuBarIcon.imageset"
+        for name in ["MenuBarIcon@2x", "MenuBarIcon@3x", "MenuBarIcon"] {
+            if let url = Bundle.module.url(forResource: name, withExtension: "png", subdirectory: imageset),
+               let image = NSImage(contentsOf: url) {
+                image.isTemplate = true
+                image.size = NSSize(width: 18, height: 18)
+                return image
+            }
+        }
+        let fallback = NSImage(systemSymbolName: "text.bubble", accessibilityDescription: "SayIt")
+            ?? NSImage(size: NSSize(width: 18, height: 18))
+        fallback.isTemplate = true
+        return fallback
+    }()
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
