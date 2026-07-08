@@ -158,7 +158,6 @@ MIT. See [LICENSE](LICENSE).
 ## Known issues
 
 - **Login item may fail outside `/Applications`** — "Launch at login" can silently fail if the app isn't in `/Applications` or was installed without `make install`. Workaround: add manually via System Settings → General → Login Items.
-- **Menu bar icon missing after manual copy** — If you copy `SayIt.app` manually instead of using `make install`, the icon may not appear until you run `xattr -cr /Applications/SayIt.app` and relaunch.
 
 See [open issues](https://github.com/muhd-ameen/sayit/issues) or [open a new one](https://github.com/muhd-ameen/sayit/issues/new) if you hit something not listed here.
 
