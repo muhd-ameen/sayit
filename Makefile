@@ -103,6 +103,9 @@ app-intel: build-intel icon
 		exit 1; \
 	fi
 	@/usr/libexec/PlistBuddy -c "Set :SayItAppToken $(SAYIT_APP_TOKEN)" $(INTEL_CONTENTS)/Info.plist
+	@# Intel Macs run older macOS — lower the floor to 12 (Monterey) for this
+	@# build only. The Apple Silicon build stays pinned to 14 via Info.plist.
+	@/usr/libexec/PlistBuddy -c "Set :LSMinimumSystemVersion 12.0" $(INTEL_CONTENTS)/Info.plist
 	@cp AppIcon.icns $(INTEL_CONTENTS)/Resources/
 	@if [ -d "$(INTEL_BUILD)/$(APP)_$(APP).bundle" ]; then \
 		cp -r $(INTEL_BUILD)/$(APP)_$(APP).bundle $(INTEL_CONTENTS)/Resources/; \

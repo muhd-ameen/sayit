@@ -1,15 +1,13 @@
 import SwiftUI
-import Observation
 
-@Observable
 @MainActor
-final class PopupViewModel {
-    var context: String = ""
-    var draft: String = ""
-    var nudge: String = ""
-    var replies: [RefinedReply] = []
-    var isLoading: Bool = false
-    var errorMessage: String? = nil
+final class PopupViewModel: ObservableObject {
+    @Published var context: String = ""
+    @Published var draft: String = ""
+    @Published var nudge: String = ""
+    @Published var replies: [RefinedReply] = []
+    @Published var isLoading: Bool = false
+    @Published var errorMessage: String? = nil
 
     func refine() async {
         let hasContent = !context.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -60,7 +58,7 @@ final class PopupViewModel {
         WindowManager.shared.hideAndRefocus()
         // Reset after the panel hides so the next open starts fresh
         Task { @MainActor in
-            try? await Task.sleep(for: .milliseconds(80))
+            try? await Task.sleep(nanoseconds: 80_000_000)
             reset()
         }
     }

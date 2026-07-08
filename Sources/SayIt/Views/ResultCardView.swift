@@ -18,7 +18,7 @@ struct ResultCardView: View {
                 Text(reply.label.uppercased())
                     .font(.system(size: 10, weight: .semibold, design: .rounded))
                     .foregroundStyle(textSecondary)
-                    .kerning(0.6)
+                    .kerningCompat(0.6)
 
                 Spacer()
 

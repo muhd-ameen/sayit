@@ -7,7 +7,7 @@ private let textPrimary = Color.white
 private let textSecondary = Color.white.opacity(0.40)
 
 struct PopupView: View {
-    @State private var viewModel = PopupViewModel()
+    @StateObject private var viewModel = PopupViewModel()
     @State private var showShortcuts = false
     @State private var showSettings = false
     @FocusState private var focus: Field?
@@ -61,7 +61,7 @@ struct PopupView: View {
             handleWindowOpen()
         }
         // Focus nudge field as soon as first card appears
-        .onChange(of: viewModel.replies.isEmpty) { _, isEmpty in
+        .onChange(of: viewModel.replies.isEmpty) { isEmpty in
             if !isEmpty { focus = .nudge }
         }
         .popover(isPresented: $showSettings) {
@@ -238,7 +238,7 @@ struct PopupView: View {
             TextEditor(text: text)
                 .font(.system(size: 13, design: .rounded))
                 .foregroundStyle(textPrimary)
-                .scrollContentBackground(.hidden)
+                .hideScrollBackground()
                 .focused($focus, equals: field)
         }
         .frame(minHeight: minHeight)
@@ -325,5 +325,41 @@ struct AccentButtonStyle: ButtonStyle {
             .padding(.vertical, 6)
             .background(Color.accentColor.opacity(configuration.isPressed ? 0.75 : 1))
             .clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+    }
+}
+
+// MARK: - Cross-version helpers
+
+extension View {
+    /// `scrollContentBackground(.hidden)` is macOS 13+. On macOS 12 the
+    /// TextEditor keeps its default backing; the surrounding surface still
+    /// reads as dark, so the degradation is cosmetic only.
+    @ViewBuilder
+    func hideScrollBackground() -> some View {
+        if #available(macOS 13, *) {
+            self.scrollContentBackground(.hidden)
+        } else {
+            self
+        }
+    }
+
+    /// `kerning(_:)` is macOS 13+; a no-op on 12 (letter-spacing is cosmetic).
+    @ViewBuilder
+    func kerningCompat(_ value: CGFloat) -> some View {
+        if #available(macOS 13, *) {
+            self.kerning(value)
+        } else {
+            self
+        }
+    }
+
+    /// `underline()` is macOS 13+; a no-op on 12 (cosmetic).
+    @ViewBuilder
+    func underlineCompat() -> some View {
+        if #available(macOS 13, *) {
+            self.underline()
+        } else {
+            self
+        }
     }
 }

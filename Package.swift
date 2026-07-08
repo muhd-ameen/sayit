@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "SayIt",
     platforms: [
-        .macOS(.v14)
+        .macOS(.v12)
     ],
     dependencies: [
         .package(

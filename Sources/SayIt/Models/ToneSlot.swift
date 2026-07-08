@@ -1,5 +1,4 @@
 import Foundation
-import Observation
 
 struct ToneSlot: Identifiable, Codable, Equatable, Sendable {
     var id: String
@@ -13,7 +12,8 @@ struct ToneSlot: Identifiable, Codable, Equatable, Sendable {
     ]
 }
 
-@Observable
+/// Plain reference type — accessed imperatively (never observed via SwiftUI),
+/// so it needs no Observable/ObservableObject conformance.
 final class ToneSettings {
     static let shared = ToneSettings()
     private let storageKey = "toneSlots_v1"

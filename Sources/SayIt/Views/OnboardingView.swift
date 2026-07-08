@@ -44,7 +44,11 @@ struct OnboardingView: View {
             // Actions
             Button {
                 if launchAtLogin {
-                    try? SMAppService.mainApp.register()
+                    // SMAppService is macOS 13+. On macOS 12 launch-at-login is
+                    // skipped; users can add SayIt under Login Items manually.
+                    if #available(macOS 13, *) {
+                        try? SMAppService.mainApp.register()
+                    }
                 }
                 onDone()
             } label: {

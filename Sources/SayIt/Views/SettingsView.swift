@@ -7,7 +7,7 @@ struct SettingsView: View {
 
     private var versionString: String {
         let info = Bundle.main.infoDictionary
-        let short = info?["CFBundleShortVersionString"] as? String ?? "1.2.1"
+        let short = info?["CFBundleShortVersionString"] as? String ?? "1.2.2"
         let build = info?["CFBundleVersion"] as? String ?? ""
         return build.isEmpty ? "v\(short)" : "v\(short) (\(build))"
     }
@@ -68,7 +68,7 @@ struct SettingsView: View {
                     Text("Contact support")
                         .font(.system(size: 10, weight: .medium, design: .rounded))
                         .foregroundStyle(Color.white.opacity(0.45))
-                        .underline()
+                        .underlineCompat()
                 }
                 .buttonStyle(.plain)
                 .help("Something went wrong? Email \(Self.supportEmail)")
@@ -88,7 +88,7 @@ struct SettingsView: View {
         .padding(16)
         .frame(width: 380)
         .background(Color(red: 0.06, green: 0.06, blue: 0.07))
-        .onChange(of: slots) { _, newSlots in
+        .onChange(of: slots) { newSlots in
             ToneSettings.shared.slots = newSlots
         }
     }
