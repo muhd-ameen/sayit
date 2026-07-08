@@ -7,7 +7,7 @@ struct SettingsView: View {
 
     private var versionString: String {
         let info = Bundle.main.infoDictionary
-        let short = info?["CFBundleShortVersionString"] as? String ?? "1.1.0"
+        let short = info?["CFBundleShortVersionString"] as? String ?? "1.2.0"
         let build = info?["CFBundleVersion"] as? String ?? ""
         return build.isEmpty ? "v\(short)" : "v\(short) (\(build))"
     }
